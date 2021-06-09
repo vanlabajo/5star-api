@@ -65,8 +65,7 @@ namespace Services
             return new PagedResult<Product>
             {
                 Data = model,
-                Total = baseQuery.Count(),
-                PageSize = pagedQuery.PageInfo.PageSize
+                CollectionSize = baseQuery.Count()
             };
         }
 

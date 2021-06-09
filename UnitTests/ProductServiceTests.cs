@@ -243,9 +243,7 @@ namespace UnitTests
                 Assert.NotNull(pagedResult);
                 Assert.NotEmpty(pagedResult.Data);
                 Assert.Equal(2, pagedResult.Data.Count);
-                Assert.Equal(1, pagedResult.PageCount);
-                Assert.Equal(30, pagedResult.PageSize);
-                Assert.Equal(2, pagedResult.Total);
+                Assert.Equal(2, pagedResult.CollectionSize);
             }
         }
 
@@ -276,9 +274,7 @@ namespace UnitTests
                 Assert.NotNull(pagedResult);
                 Assert.NotEmpty(pagedResult.Data);
                 Assert.Single(pagedResult.Data);
-                Assert.Equal(1, pagedResult.PageCount);
-                Assert.Equal(40, pagedResult.PageSize);
-                Assert.Equal(1, pagedResult.Total);
+                Assert.Equal(1, pagedResult.CollectionSize);
             }
         }
 
