@@ -30,7 +30,7 @@ namespace WebApi.Controllers
             return await productService.GetProducts(pagedQuery);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<Product> Get(int id)
         {
             return await productService.GetProduct(id);
@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<ServiceResult> Post([FromBody] ProductDTO product)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = User.Identity.Name;
             var newProduct = new Product(userId, product.Name, product.Upc);
             newProduct.SetCost(userId, product.Cost);
             newProduct.SetPrice(userId, product.Price);
@@ -64,7 +64,7 @@ namespace WebApi.Controllers
             var data = await productService.GetProduct(id);
             if (data != null)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userId = User.Identity.Name;
                 data.SetName(userId, product.Name);
                 data.SetUpc(userId, product.Upc);
                 data.SetCost(userId, product.Cost);
@@ -91,7 +91,7 @@ namespace WebApi.Controllers
             var data = await productService.GetProduct(id);
             if (data != null)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userId = User.Identity.Name;
                 var serviceResult = await productService.RemoveProduct(id);
                 if (serviceResult.Success)
                     logger.LogInformation($"{userId} deleted the product with name: {data.Name} and upc: {data.Upc}");
