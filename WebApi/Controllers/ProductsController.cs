@@ -36,7 +36,7 @@ namespace WebApi.Controllers
             return await productService.GetProduct(id);
         }
 
-        [HttpGet("{nameOrUpc}")]
+        [HttpGet("search/{nameOrUpc}")]
         public async Task<Product> Get(string nameOrUpc)
         {
             return await productService.GetProduct(nameOrUpc);
