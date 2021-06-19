@@ -7,7 +7,6 @@ using Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -98,59 +97,53 @@ namespace UnitTests
             product = await service.GetProduct(result.Id.Value);
 
             Assert.Equal(1, product.Id);
-            Assert.Equal("tester1", product.CreatedBy);
+            Assert.Equal("tester1", product.AuditLog.CreatedBy);
             Assert.Equal("test", product.Name);
             Assert.Equal("test", product.Upc);
-            Assert.NotNull(product.Timestamp);
+            Assert.NotNull(product.TimeStamp);
         }
 
         [Fact]
         public async Task ShouldUpdateProduct()
         {
-            // Use a different scoped context to simulate two separate requests of
-            // 1. Fetching the product, i.e., api/products/1
-            // 2. Updating the product, i.e., put api/products
+            using var dbContext = new FiveStarDbContext(dbContextOptions);
+
+            var service = new ProductService(dbContext);
 
             var product = new Product("tester1", "test", "test");
+            dbContext.Products.Add(product);
+            dbContext.SaveChanges();
 
-            using (var dbContext = new FiveStarDbContext(dbContextOptions))
-            {
-                dbContext.Products.Add(product);
-                dbContext.SaveChanges();
+            Assert.Equal(1, product.Id);
+            Assert.Equal(0, product.Quantity);
 
-                Assert.Equal(1, product.Id);
-                Assert.Equal(0, product.Quantity);
-            }
+            var oldTimeStamp = product.TimeStamp;
 
             product.SetQuantity("tester2", 10);
-            
-            using (var dbContext = new FiveStarDbContext(dbContextOptions))
-            {
-                var service = new ProductService(dbContext);
 
-                var result = await service.UpdateProduct(product);
+            var result = await service.UpdateProduct(product);
 
-                Assert.True(result.Success);
-                Assert.Empty(result.ValidationErrors);
+            Assert.True(result.Success);
+            Assert.Empty(result.ValidationErrors);
 
-                var updatedProduct = await service.GetProduct(product.Id);
+            var updatedProduct = await service.GetProduct(product.Id);
 
-                Assert.Equal(10, updatedProduct.Quantity);
-                Assert.False(product.Timestamp.SequenceEqual(updatedProduct.Timestamp)); // Timestamp should updated externally
-            }
+            Assert.Equal(10, updatedProduct.Quantity);
+
+            // Timestamp should have been updated externally
+            Assert.False(oldTimeStamp.SequenceEqual(updatedProduct.TimeStamp));
         }
 
         [Fact]
         public async Task ShouldNotAllowConcurrentUpdates()
         {
-            // Use a different scoped context to simulate two separate requests of
-            // 1. Fetching the product, i.e., api/products/1
-            // 2. Updating the product, i.e., put api/products
-
-            var product = new Product("tester1", "test", "test");
+            // Use a different scoped contexts to simulate two separate api requests
+            // from different users
 
             using (var dbContext = new FiveStarDbContext(dbContextOptions))
             {
+                var product = new Product("tester1", "test", "test");
+
                 dbContext.Products.Add(product);
                 dbContext.SaveChanges();
 
@@ -158,30 +151,38 @@ namespace UnitTests
                 Assert.Equal(0, product.Quantity);
             }
 
-            product.SetQuantity("tester2", 10);
+            Product user1;
+            Product user2;
 
             using (var dbContext = new FiveStarDbContext(dbContextOptions))
             {
                 var service = new ProductService(dbContext);
 
-                var result = await service.UpdateProduct(product);
-
-                Assert.True(result.Success);
-                Assert.Empty(result.ValidationErrors);
-
-                var updatedProduct = await service.GetProduct(product.Id);
-
-                Assert.Equal(10, updatedProduct.Quantity);
-                Assert.False(product.Timestamp.SequenceEqual(updatedProduct.Timestamp)); // Timestamp should updated externally
+                user1 = await service.GetProduct(1);
             }
 
-            product.SetQuantity("tester3", 20);
+            using (var dbContext = new FiveStarDbContext(dbContextOptions))
+            {
+                var service = new ProductService(dbContext);
+
+                user2 = await service.GetProduct(1);
+            }
 
             using (var dbContext = new FiveStarDbContext(dbContextOptions))
             {
                 var service = new ProductService(dbContext);
 
-                var result = await service.UpdateProduct(product);
+                user1.SetPrice("user1", 5);
+                await service.UpdateProduct(user1);
+            }
+
+            using (var dbContext = new FiveStarDbContext(dbContextOptions))
+            {
+                var service = new ProductService(dbContext);
+
+                user2.SetPrice("user2", 6);
+
+                var result = await service.UpdateProduct(user2);
 
                 Assert.False(result.Success);
                 Assert.Single(result.ValidationErrors);

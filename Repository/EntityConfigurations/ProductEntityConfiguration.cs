@@ -15,11 +15,14 @@ namespace Repository.EntityConfigurations
             builder.Property(o => o.Cost).HasPrecision(18, 6);
             builder.Property(o => o.Price).HasPrecision(18, 6);
             builder.Property(o => o.Quantity);
-            builder.Property(o => o.LastUpdateTimeUtc);
-            builder.Property(o => o.LastUpdatedBy);
-            builder.Property(o => o.CreatedTimeUtc);
-            builder.Property(o => o.CreatedBy);
-            builder.Property(o => o.Timestamp).IsRowVersion();
+            builder.Property(o => o.TimeStamp).IsRowVersion();
+
+            builder.OwnsOne(o => o.AuditLog, cfg => {
+                cfg.Property(x => x.CreatedTime).HasColumnName("CreatedTime");
+                cfg.Property(x => x.ModifiedTime).HasColumnName("ModifiedTime");
+                cfg.Property(x => x.CreatedBy).HasColumnName("CreatedBy");
+                cfg.Property(x => x.ModifiedBy).HasColumnName("ModifiedBy");
+            });
 
             builder.HasIndex(o => o.Name);
             builder.HasIndex(o => o.Upc);

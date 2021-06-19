@@ -22,15 +22,10 @@ namespace Services
             var result = await ValidateProduct(product);
             if (result.ValidationErrors.Count > 0) return result;
 
-            var newProduct = new Product(product.CreatedBy, product.Name, product.Upc);
-            newProduct.SetCost(product.CreatedBy, product.Cost);
-            newProduct.SetPrice(product.CreatedBy, product.Price);
-            newProduct.SetQuantity(product.CreatedBy, product.Quantity);
-
-            dbContext.Products.Add(newProduct);
+            dbContext.Products.Add(product);
             result.Success = await dbContext.SaveChangesAsync() > 0;
 
-            if (result.Success) result.Id = newProduct.Id;
+            if (result.Success) result.Id = product.Id;
             return result;
         }
 
@@ -97,22 +92,21 @@ namespace Services
         public async Task<ServiceResult> UpdateProduct(Product product)
         {
             var result = await ValidateProduct(product);
-            var data = await dbContext.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
+            if (result.ValidationErrors.Count > 0) return result;
 
-            if (data != null)
+            // Retrieve a new db record to fetch most recent time stamp
+            var dbData = await dbContext.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+            if (dbData != null)
             {
-                if (!data.Timestamp.SequenceEqual(product.Timestamp))
+                if (!dbData.TimeStamp.SequenceEqual(product.TimeStamp))
                     result.ValidationErrors["Product"] = "The record you are trying to update was modified by another user. If you still want to update this record, please refresh the list and try again.";
 
                 if (result.ValidationErrors.Count == 0)
                 {
-                    data.SetName(product.LastUpdatedBy, product.Name);
-                    data.SetUpc(product.LastUpdatedBy, product.Upc);
-                    data.SetCost(product.LastUpdatedBy, product.Cost);
-                    data.SetPrice(product.LastUpdatedBy, product.Price);
-                    data.SetQuantity(product.LastUpdatedBy, product.Quantity);
-
-                    dbContext.Products.Update(data);
+                    dbContext.Products.Update(product);
                     result.Success = await dbContext.SaveChangesAsync() > 0;
                 }
             }
