@@ -18,9 +18,13 @@ namespace Core
 
         public void Modified(string modifiedBy)
         {
-            var timeStamp = DateTime.UtcNow;
-            ModifiedBy = modifiedBy;
+            var timeStamp = DateTime.UtcNow;            
             ModifiedTime = timeStamp;
+
+            if (!string.IsNullOrEmpty(modifiedBy))
+            {
+                ModifiedBy = modifiedBy;
+            }
         }
     }
 }
