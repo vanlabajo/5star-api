@@ -8,6 +8,8 @@ namespace Repository
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<MonthlySales> MonthlySales { get; set; }
+        public DbSet<MonthlyExpenses> MonthlyExpenses { get; set; }
 
         public FiveStarDbContext(DbContextOptions<FiveStarDbContext> options) : base(options) { }
 
@@ -15,6 +17,8 @@ namespace Repository
         {
             modelBuilder.ApplyConfiguration(new ProductEntityConfiguration());
             modelBuilder.ApplyConfiguration(new InvoiceEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new MonthlySalesEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new MonthlyExpensesEntityConfiguration());
         }
     }
 }

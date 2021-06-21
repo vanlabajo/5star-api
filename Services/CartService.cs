@@ -1,6 +1,7 @@
 ﻿using Core;
 using Core.Services;
 using Repository;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,6 +34,27 @@ namespace Services
             }
 
             dbContext.Invoices.Add(newInvoice);
+
+            var timeStamp = DateTime.UtcNow;
+            var sales = await dbContext.MonthlySales.FindAsync(timeStamp.Year);
+
+            var property = typeof(MonthlySales).GetProperty(timeStamp.ToString("MMM"));
+            if (property != null)
+            {
+                if (sales != null)
+                {
+                    var currentValue = (decimal?)property.GetValue(sales, null);
+                    property.SetValue(sales, (currentValue ?? 0m) + newInvoice.Total, null);
+
+                    dbContext.MonthlySales.Update(sales);
+                }
+                else
+                {
+                    sales = new MonthlySales(timeStamp.Year);
+                    property.SetValue(sales, newInvoice.Total, null);
+                    dbContext.MonthlySales.Add(sales);
+                }
+            }
 
             result.Success = await dbContext.SaveChangesAsync() > 0;
 

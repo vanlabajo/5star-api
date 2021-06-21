@@ -204,5 +204,41 @@ namespace UnitTests
             Assert.Equal("Product is out of stock.", result.ValidationErrors["1"]);
             Assert.False(result.ValidationErrors.ContainsKey("2"));
         }
+
+        [Fact]
+        public async Task ShouldGenerateTheCorrectSales()
+        {
+            using var dbContext = new FiveStarDbContext(dbContextOptions);
+
+            var product1 = new Product("tester1", "abc", "abc");
+            product1.SetQuantity("tester1", 10);
+            product1.SetPrice("tester2", 1.5m);
+
+            var product2 = new Product("tester1", "zxc", "zxc");
+            product2.SetQuantity("tester1", 10);
+            product2.SetPrice("tester2", 1.7m);
+
+            dbContext.Products.AddRange(product1, product2);
+            dbContext.SaveChanges();
+
+            var service = new CartService(dbContext);
+
+            var products = dbContext.Products.ToList();
+
+            var invoiceItems = new List<InvoiceItem>();
+
+            invoiceItems.Add(new InvoiceItem(products[0], 5));
+            invoiceItems.Add(new InvoiceItem(products[1], 5));
+
+            await service.Checkout(invoiceItems);
+
+            var invoice = dbContext.Invoices.First();
+
+            var timeStamp = DateTime.UtcNow;
+            var sales = dbContext.MonthlySales.FirstOrDefault(s => s.Year == timeStamp.Year);
+
+            Assert.NotNull(sales);
+            Assert.Equal(16, (decimal)sales.GetType().GetProperty(timeStamp.ToString("MMM")).GetValue(sales, null));
+        }
     }
 }
