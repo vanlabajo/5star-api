@@ -1,3 +1,4 @@
+using Core;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
+using System.Linq;
 
 namespace WebApi
 {
@@ -30,21 +32,30 @@ namespace WebApi
                 var context = services.GetRequiredService<FiveStarDbContext>();
                 context.Database.EnsureCreated();
 
-                return;
+                if (!context.MonthlySales.Any())
+                {
+                    context.MonthlySales.Add(new MonthlySales(2021)
+                    {
+                        Apr = 85000,
+                        May = 90000,
+                        Jun = 10000
+                    });
 
-                // TODO: Seed data
+                    context.SaveChanges();
+                }
 
-                //if (context.Cars.Any()) return;
 
-                //var cars = new Car[]
-                //{
-                //    new Car { Type = CarType.Sedan, Size = 4, GasConsumption = "1000 miles / liter", DailyRentalCost = 100, NumberOfUnits = 10 },
-                //    new Car { Type = CarType.SUV, Size = 6, GasConsumption = "1000 miles / liter", DailyRentalCost = 150, NumberOfUnits = 10 },
-                //    new Car { Type = CarType.Sedan, Size = 8, GasConsumption = "1000 miles / liter", DailyRentalCost = 200, NumberOfUnits = 10 }
-                //};
+                if (!context.MonthlyExpenses.Any())
+                {
+                    context.MonthlyExpenses.Add(new MonthlyExpenses(2021)
+                    {
+                        Apr = 80000,
+                        May = 85000,
+                        Jun = 90000
+                    });
 
-                //context.Cars.AddRange(cars);
-                //context.SaveChanges();
+                    context.SaveChanges();
+                }
             }
             catch (Exception ex)
             {

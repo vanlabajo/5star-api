@@ -11,8 +11,8 @@ namespace UnitTests
         {
             var product = new Product("tester1", "test", "test");
 
-            Assert.Equal("tester1", product.CreatedBy);
-            Assert.NotEqual(DateTime.MinValue, product.CreatedTimeUtc);
+            Assert.Equal("tester1", product.AuditLog.CreatedBy);
+            Assert.NotEqual(DateTime.MinValue, product.AuditLog.CreatedTime);
 
             Assert.Equal("test", product.Name);
             Assert.Equal("test", product.Upc);
@@ -25,8 +25,8 @@ namespace UnitTests
 
             product.SetQuantity("tester2", 1);
 
-            Assert.Equal("tester2", product.LastUpdatedBy);
-            Assert.NotEqual(DateTime.MinValue, product.LastUpdateTimeUtc);
+            Assert.Equal("tester2", product.AuditLog.ModifiedBy);
+            Assert.NotEqual(DateTime.MinValue, product.AuditLog.ModifiedTime);
 
             Assert.Equal(1, product.Quantity);
         }
@@ -38,8 +38,8 @@ namespace UnitTests
 
             product.SetPrice("tester2", 1);
 
-            Assert.Equal("tester2", product.LastUpdatedBy);
-            Assert.NotEqual(DateTime.MinValue, product.LastUpdateTimeUtc);
+            Assert.Equal("tester2", product.AuditLog.ModifiedBy);
+            Assert.NotEqual(DateTime.MinValue, product.AuditLog.ModifiedTime);
 
             Assert.Equal(1, product.Price);
         }
@@ -51,8 +51,8 @@ namespace UnitTests
 
             product.SetCost("tester2", 5);
 
-            Assert.Equal("tester2", product.LastUpdatedBy);
-            Assert.NotEqual(DateTime.MinValue, product.LastUpdateTimeUtc);
+            Assert.Equal("tester2", product.AuditLog.ModifiedBy);
+            Assert.NotEqual(DateTime.MinValue, product.AuditLog.ModifiedTime);
 
             Assert.Equal(5, product.Cost);
         }
@@ -64,8 +64,8 @@ namespace UnitTests
 
             product.SetName("tester2", "abc");
 
-            Assert.Equal("tester2", product.LastUpdatedBy);
-            Assert.NotEqual(DateTime.MinValue, product.LastUpdateTimeUtc);
+            Assert.Equal("tester2", product.AuditLog.ModifiedBy);
+            Assert.NotEqual(DateTime.MinValue, product.AuditLog.ModifiedTime);
 
             Assert.Equal("abc", product.Name);
         }
@@ -77,8 +77,8 @@ namespace UnitTests
 
             product.SetUpc("tester2", "abc");
 
-            Assert.Equal("tester2", product.LastUpdatedBy);
-            Assert.NotEqual(DateTime.MinValue, product.LastUpdateTimeUtc);
+            Assert.Equal("tester2", product.AuditLog.ModifiedBy);
+            Assert.NotEqual(DateTime.MinValue, product.AuditLog.ModifiedTime);
 
             Assert.Equal("abc", product.Upc);
         }
