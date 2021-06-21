@@ -66,18 +66,25 @@ namespace Services
         {
             var result = new ServiceResult();
 
-            foreach (var item in items)
+            if (items.Count == 0)
             {
-                var product = await dbContext.Products.FindAsync(item.Product.Id);
-                if (product == null)
-                {
-                    result.ValidationErrors.Add($"{item.Product.Id}", "Product is not valid.");
-                }
-                else if (product != null && product.Quantity < item.Quantity)
-                {
-                    result.ValidationErrors.Add($"{item.Product.Id}", "Product is out of stock.");
-                }
+                result.ValidationErrors.Add("Items", "Item list is empty.");
             }
+            else
+            {
+                foreach (var item in items)
+                {
+                    var product = await dbContext.Products.FindAsync(item.Product?.Id ?? 0);
+                    if (product == null)
+                    {
+                        result.ValidationErrors.Add($"{item.Product?.Id ?? 0}", "Product is not valid.");
+                    }
+                    else if (product != null && product.Quantity < item.Quantity)
+                    {
+                        result.ValidationErrors.Add($"{item.Product?.Id ?? 0}", "Product is out of stock.");
+                    }
+                }
+            }            
 
             return result;
         }

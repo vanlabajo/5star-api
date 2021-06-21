@@ -240,5 +240,22 @@ namespace UnitTests
             Assert.NotNull(sales);
             Assert.Equal(16, (decimal)sales.GetType().GetProperty(timeStamp.ToString("MMM")).GetValue(sales, null));
         }
+
+        [Fact]
+        public async Task ShouldValidateIfItemListIsEmpty()
+        {
+            using var dbContext = new FiveStarDbContext(dbContextOptions);
+
+            var service = new CartService(dbContext);
+
+            var invoiceItems = new List<InvoiceItem>();
+
+            var result = await service.Checkout(invoiceItems);
+
+            Assert.False(result.Success);
+            Assert.Null(result.Id);
+            Assert.True(result.ValidationErrors.ContainsKey("Items"));
+            Assert.Equal("Item list is empty.", result.ValidationErrors["Items"]);
+        }
     }
 }
