@@ -19,6 +19,7 @@ namespace Repository.EntityConfigurations
                 cfg.Property<int>("Id");
                 cfg.HasKey("Id");
                 cfg.Property("Id").ValueGeneratedOnAdd();
+                cfg.ToTable("InvoiceItems");
 
                 cfg.HasOne(x => x.Product).WithMany();
                 cfg.Property(x => x.Quantity);

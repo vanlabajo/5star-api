@@ -10,6 +10,7 @@ namespace Repository.EntityConfigurations
         {
             builder.ToTable("MonthlySales");
             builder.HasKey(o => o.Year);
+            builder.Property(o => o.Year).ValueGeneratedNever();
         }
     }
 }
