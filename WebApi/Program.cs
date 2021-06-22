@@ -37,8 +37,8 @@ namespace WebApi
                     context.MonthlySales.Add(new MonthlySales(2021)
                     {
                         Apr = 85000,
-                        May = 90000,
-                        Jun = 10000
+                        May = 60000,
+                        Jun = 100000
                     });
 
                     context.SaveChanges();
@@ -50,7 +50,7 @@ namespace WebApi
                     context.MonthlyExpenses.Add(new MonthlyExpenses(2021)
                     {
                         Apr = 80000,
-                        May = 85000,
+                        May = 60000,
                         Jun = 90000
                     });
 
