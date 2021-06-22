@@ -71,6 +71,7 @@ namespace WebApi
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<ISalesService, SalesService>();
+            services.AddScoped<IExpensesService, ExpensesService>();
 
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
