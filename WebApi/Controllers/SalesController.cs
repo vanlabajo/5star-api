@@ -23,5 +23,11 @@ namespace WebApi.Controllers
         {
             return await salesService.GetMonthlySales(year);
         }
+
+        [HttpGet("today")]
+        public async Task<decimal> Get()
+        {
+            return await salesService.GetTotalSalesToday();
+        }
     }
 }
