@@ -19,6 +19,7 @@ namespace Services
         public async Task<Invoice> GetInvoice(int invoiceId)
         {
             var invoice = await dbContext.Invoices
+                .Include(i => i.Items).ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(i => i.Id == invoiceId);
             return invoice;
         }
@@ -26,13 +27,16 @@ namespace Services
         public async Task<Invoice> GetInvoice(string referenceNumber)
         {
             var invoice = await dbContext.Invoices
+                .Include(i => i.Items).ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(i => i.ReferenceNumber == referenceNumber);
             return invoice;
         }
 
         public async Task<PagedResult<Invoice>> GetInvoices(PagedQuery pagedQuery)
         {
-            var baseQuery = dbContext.Invoices.AsQueryable();
+            var baseQuery = dbContext.Invoices
+                .Include(i => i.Items).ThenInclude(i => i.Product)
+                .AsQueryable();
             if (!string.IsNullOrEmpty(pagedQuery.SearchTerm))
                 baseQuery = baseQuery.Where(i => i.ReferenceNumber.ToLower().Contains(pagedQuery.SearchTerm.ToLower()));
 
