@@ -83,7 +83,10 @@ namespace WebApi
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.Converters.Add(new IsoDateTimeConverter());
+                    options.SerializerSettings.Converters.Add(new IsoDateTimeConverter
+                    {
+                        DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
+                    });
                 });
 
             services.AddSwaggerGen(c =>
