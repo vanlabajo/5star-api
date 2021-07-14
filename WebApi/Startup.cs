@@ -43,15 +43,7 @@ namespace WebApi
 
             });
 
-            services.AddDbContext<FiveStarDbContext>
-                (options => options.UseSqlServer(Configuration.GetConnectionString("DbContext"),
-                    sqlOptions =>
-                    {
-                        sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(30),
-                        errorNumbersToAdd: null);
-                    }));
+            services.AddDbContext<FiveStarDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("DbContext")));
 
             services.AddAuthentication(options =>
             {
