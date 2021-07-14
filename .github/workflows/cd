@@ -1,0 +1,63 @@
+name: Build Image and Release
+on: 
+  push:
+    tags:
+      - '*'
+      
+jobs:
+  build-upload-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use .NET 5.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      
+      - name: Get tag version
+        id: TagVersion
+        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/}
+        
+      - name: Check tag version
+        run: echo ${{ steps.TagVersion.outputs.version }}
+      
+      - name: Build image
+        run: |
+          docker build . -t api:${{ steps.TagVersion.outputs.VERSION }} -f WebApi/Dockerfile
+          mkdir -p artifact
+          docker save api:${{ steps.TagVersion.outputs.VERSION }} > artifact/docker-image.tar
+        
+      - name: Upload artifact
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifact
+          retention-days: 1
+          
+  release:
+    runs-on: ubuntu-latest
+    needs: build-upload-artifact
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifact
+          
+      - name: Check downloaded artifact
+        run: ls artifact
+      
+      - name: Get change log
+        uses: scottbrenner/generate-changelog-action@master
+        id: ChangeLog
+          
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body: ${{ steps.ChangeLog.outputs.changelog }}
+          files: artifact/docker-image.tar
