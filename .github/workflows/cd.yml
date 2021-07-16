@@ -1,4 +1,4 @@
-name: Build Image and Release
+name: Build Image, Release and Deploy to GCP
 on: 
   push:
     tags:
@@ -61,3 +61,47 @@ jobs:
         with:
           body: ${{ steps.ChangeLog.outputs.changelog }}
           files: artifact/docker-image.tar
+          
+  deploy-to-gcp:
+    runs-on: ubuntu-latest
+    needs: release
+    env:
+        IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+        REGION: asia-southeast1
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Download docker image artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifact
+      
+      - name: Check downloaded artifact
+        run: ls artifact
+        
+      - name: Load docker image
+        run: |
+          cd artifact
+          docker load < docker-image.tar
+      
+      - name: Setup GCloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Authorize docker push
+        run: gcloud auth configure-docker
+        
+      - name: Push docker image
+        run: docker push $IMAGE_NAME
+        
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@main
+        with:
+          image: $IMAGE_NAME
+          service: ${{ secrets.GCP_APP_NAME }}
+          region: ${{ env.REGION }}
+          env_vars: NAME="Hello World"
