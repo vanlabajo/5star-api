@@ -112,4 +112,4 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ steps.TagVersion.outputs.version }}
           service: api
           region: ${{ env.REGION }}
-          env_vars: ConnectionStrings__DbContext="${{ secrets.AZ_CONNECTION_STRING }}",AllowedOrigins="['http://localhost:4200']"
+          env_vars: ${{ secrets.GCP_APP_ENV_VARS }}
