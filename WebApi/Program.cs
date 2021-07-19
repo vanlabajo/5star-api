@@ -18,19 +18,19 @@ namespace WebApi
         {
             var host = CreateHostBuilder(args).Build();
 
-            CreateDbIfDoesNotExist(host);
+            DbSeeding(host);
 
             host.Run();
         }
 
-        private static void CreateDbIfDoesNotExist(IHost host)
+        private static void DbSeeding(IHost host)
         {
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
             try
             {
                 var context = services.GetRequiredService<FiveStarDbContext>();
-                context.Database.EnsureCreated();
+                //context.Database.EnsureCreated();
 
                 if (!context.MonthlySales.Any())
                 {
@@ -60,7 +60,7 @@ namespace WebApi
             catch (Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occurred creating the DB.");
+                logger.LogError(ex, "An error occurred seeding the DB.");
             }
         }
 
