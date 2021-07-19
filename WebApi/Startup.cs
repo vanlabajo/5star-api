@@ -30,6 +30,8 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowedOrigins",
@@ -103,6 +105,8 @@ namespace WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
             }
+
+            app.UseResponseCompression();
 
             app.UseHttpsRedirection();
 
