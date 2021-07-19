@@ -19,6 +19,8 @@ RUN dotnet publish "WebApi.csproj" -c Release -o /app/publish \
   -p:PublishSingleFile=true
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:5.0-alpine AS final
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
