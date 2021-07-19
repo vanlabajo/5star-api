@@ -104,4 +104,4 @@ jobs:
           image: $IMAGE_NAME
           service: ${{ secrets.GCP_APP_NAME }}
           region: ${{ env.REGION }}
-          env_vars: NAME="Hello World"
+          env_vars: ConnectionStrings__DbContext="${{ secrets.AZ_CONNECTION_STRING }}",AllowedOrigins="['http://localhost:4200']"
