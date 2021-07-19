@@ -91,7 +91,7 @@ jobs:
         run: |
           cd artifact
           docker load < docker-image.tar
-          docker tag api:${{ steps.TagVersion.outputs.VERSION }} $IMAGE_NAME:${{ steps.TagVersion.outputs.version }}
+          docker tag api:${{ steps.TagVersion.outputs.VERSION }} $IMAGE_NAME
       
       - name: Setup GCloud
         uses: google-github-actions/setup-gcloud@master
@@ -104,12 +104,12 @@ jobs:
         run: gcloud auth configure-docker
         
       - name: Push docker image
-        run: docker push $IMAGE_NAME:${{ steps.TagVersion.outputs.version }}
+        run: docker push $IMAGE_NAME
         
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@main
         with:
-          image: $IMAGE_NAME:${{ steps.TagVersion.outputs.version }}
+          image: $IMAGE_NAME
           service: ${{ secrets.GCP_APP_NAME }}
           region: ${{ env.REGION }}
           env_vars: ConnectionStrings__DbContext="${{ secrets.AZ_CONNECTION_STRING }}",AllowedOrigins="['http://localhost:4200']"
