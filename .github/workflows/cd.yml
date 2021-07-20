@@ -113,3 +113,4 @@ jobs:
           service: api
           region: ${{ env.REGION }}
           env_vars: ${{ secrets.GCP_APP_ENV_VARS }}
+          flags: --allow-unauthenticated
