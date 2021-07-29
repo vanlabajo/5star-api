@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace UnitTests
+namespace Tests.UnitTests
 {
     public class ProductTests
     {

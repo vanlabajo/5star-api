@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace UnitTests
+namespace Tests.UnitTests
 {
     public class InvoiceTests
     {

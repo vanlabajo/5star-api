@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace UnitTests
+namespace Tests.UnitTests
 {
     public class CartServiceTests : IDisposable
     {
