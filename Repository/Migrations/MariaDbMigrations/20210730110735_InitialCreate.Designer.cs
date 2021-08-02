@@ -2,38 +2,35 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
-namespace Repository.Migrations
+namespace Repository.Migrations.MariaDbMigrations
 {
-    [DbContext(typeof(FiveStarDbContext))]
-    [Migration("20210719043501_InitialCreate")]
+    [DbContext(typeof(MariaDbFiveStarDbContext))]
+    [Migration("20210730110735_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.8");
 
             modelBuilder.Entity("Core.Invoice", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ReferenceNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -162,8 +159,7 @@ namespace Repository.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Cost")
                         .HasPrecision(18, 6)
@@ -171,7 +167,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 6)
@@ -180,14 +176,14 @@ namespace Repository.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("TimeStamp")
+                    b.Property<DateTime?>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("timestamp(6)");
 
                     b.Property<string>("Upc")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -206,8 +202,7 @@ namespace Repository.Migrations
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                                .HasColumnType("int");
 
                             b1.Property<int>("InvoiceId")
                                 .HasColumnType("int");
@@ -244,24 +239,22 @@ namespace Repository.Migrations
                     b.OwnsOne("Core.AuditLog", "AuditLog", b1 =>
                         {
                             b1.Property<int>("ProductId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                                .HasColumnType("int");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(max)")
+                                .HasColumnType("longtext")
                                 .HasColumnName("CreatedBy");
 
                             b1.Property<DateTime>("CreatedTime")
-                                .HasColumnType("datetime2")
+                                .HasColumnType("datetime(6)")
                                 .HasColumnName("CreatedTime");
 
                             b1.Property<string>("ModifiedBy")
-                                .HasColumnType("nvarchar(max)")
+                                .HasColumnType("longtext")
                                 .HasColumnName("ModifiedBy");
 
                             b1.Property<DateTime>("ModifiedTime")
-                                .HasColumnType("datetime2")
+                                .HasColumnType("datetime(6)")
                                 .HasColumnName("ModifiedTime");
 
                             b1.HasKey("ProductId");
