@@ -11,7 +11,9 @@ namespace Repository
         public DbSet<MonthlySales> MonthlySales { get; set; }
         public DbSet<MonthlyExpenses> MonthlyExpenses { get; set; }
 
-        public FiveStarDbContext(DbContextOptions<FiveStarDbContext> options) : base(options) { }
+        public FiveStarDbContext() { }
+        public FiveStarDbContext(DbContextOptions<FiveStarDbContext> options) : base(options) {}
+        public FiveStarDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

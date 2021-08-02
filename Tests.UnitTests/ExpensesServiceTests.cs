@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace UnitTests
+namespace Tests.UnitTests
 {
     public class ExpensesServiceTests : IDisposable
     {
